@@ -1,0 +1,93 @@
+body{
+	overflow:hidden;
+}
+
+.menuBar{
+	position:absolute;
+	left:0;
+	right:0;
+	z-index:90000;
+}
+
+.filtersBar{
+	position:absolute;
+	height:60px;
+	width:100%;
+	background:#d3ff00;
+	top:0;
+	margin-left:-15px;
+}
+
+.ui-listview.items, .ui-listview.locations{
+	margin-top:45px;
+	z-index:0;	
+}
+
+.items li, .items li > div, .items li > div > div{
+	width:160px;
+	height:160px;
+}
+
+.items .ui-li-has-thumb .ui-btn-inner a.ui-link-inherit, .items .ui-li-static.ui-li-has-thumb{
+	padding:0;
+}
+
+.items li{
+	float:left;
+	display:block;
+}
+	.items li a{
+		width:100%;
+		height:100%;
+		text-align:center;
+		position:relative;
+		display:block;
+	}
+
+	.items li img{
+		float:none;
+		display:inline;
+		position:static;
+		max-height:none;
+		max-width:none;
+		margin:10px auto 0 auto;
+	}
+
+	.items li span{
+		position:absolute;
+		bottom:0;
+		left:0;
+		right:0;
+		text-align:center;
+	}
+
+.ui-listview-filter .ui-input-search{
+	float:left;
+}
+
+.ui-listview-filter{
+	display:none;
+}
+
+.widget{
+	float:left;
+}
+
+.hiddenTags{
+	display:none;
+}
+
+.filterIcon{
+	float:left;
+	margin-right:5px;
+}
+	.filterIcon > a{
+		float:left;
+	}
+	.filterIcon .ui-listview{
+		position:absolute;
+		left:0;
+		right:0;
+		margin:0;
+		top:50px;
+	}

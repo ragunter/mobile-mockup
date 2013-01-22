@@ -1,0 +1,235 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Raghunter</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="./jquery.mobile/jquery.mobile-1.2.0.css" />
+	<link rel="stylesheet" href="./css/main.css" />
+	<script src="./jquery.mobile/jquery-1.8.2.js"></script>
+	<script src="./js/lorem.js"></script>
+	<script src="./js/handlebars.js"></script>
+	<script src="./js/main.js"></script>
+	<script src="./jquery.mobile/jquery.mobile-1.2.0.js"></script>
+	<script src="./js/iscroll.js"></script>
+	<script src="./js/jquery.mobile.iscrollview.js"></script>
+</head>
+<body>
+
+<script id="filterIcon-template" type="text/x-handlebars-template">
+	<div class="filterIcon toggle">
+		<a href="#" class="toggler" data-role="button">{{name}}:{{value}}</a>
+		<ul data-role="listview" class="togglee">
+			<li>
+				<a href="#Filter{{name}}">
+					{{{image 0 80 80}}}
+					<h3 id="Filter{{name}}_value">{{value}}</h3>
+					<p>Edit this criteria</p>
+				</a>
+			</li>
+			<li data-icon="delete" data-mini="true" data-theme="e" data-select="{{name}}:{{value}}" class="filter-delete"><a href="#">remove this criteria</a></li>
+		</ul>
+	</div>
+</script>
+
+<script id="pageFilter-template" type="text/x-handlebars-template" class="partial">
+	{{#each filters}}
+		<div data-role="page" data-title="{{name}}" id="Filter{{name}}" data-url="Filter{{name}}" data-add-back-btn="true" data-theme="b">
+
+			{{> header}}
+
+			<div data-role="content" data-iscroll class="scroll">
+				<ul id="sub_{{name}}" data-role="listview">
+					{{#each values}}
+						<li>
+							<a href="#" class="filter-select" data-select="{{../name}}:{{this}}">
+								{{{image 0 80 80}}}
+								{{this}}
+							</a>
+						</li>
+					{{/each}}	
+				</ul>
+			</div>
+
+			{{> footer}}
+		</div>
+	{{/each}}
+</script>
+
+<script id="filters-template" type="text/x-handlebars-template" class="partial">
+		<div id="Menu{{title}}" class="menuBar">
+			<div id="MainSelector" class="filterIcon toggle">
+				<input type="button" id="Criterias" value="add criteria" data-inline="true" class="menu toggler" data-icon="search">
+				<ul data-role="listview" class="togglee" style="display:none" data-theme="b">
+				{{#each filters}}
+					<li>
+						<a href="#Filter{{name}}" data-transition="flip" data-rel="dialog">
+							{{{image 0 80 80}}}
+							<h3 data-transition="slide">{{name}}</h3>
+						</a>
+					</li>
+				{{/each}}
+				</ul>
+			</div>
+		</div>
+</script>
+
+<script id="header-template" type="text/x-handlebars-template" class="partial">
+	<div data-role="header" data-position="fixed" data-id="header" data-tap-toggle="false">
+		<h1><img src="./res/logo-white.png" alt="raghunter" height="40">{{title}}</h1>
+	</div>
+</script>
+
+<script id="footer-template" type="text/x-handlebars-template" class="partial">
+	<div data-role="footer" data-position="fixed" data-id="footer" data-tap-toggle="false">
+		<div data-role="navbar" data-iconpos="top">
+			<ul>
+				<li><a href="#Search" data-icon="search" {{#ifCond title 'Search'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>Search</a></li>
+				<li><a href="#Locate" data-icon="star" {{#ifCond title 'Locate'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>Locate</a></li>
+				<li><a href="#User" data-icon="gear" {{#ifCond title 'User'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>Settings</a></li>
+			</ul>
+		</div>
+	</div>
+</script>
+
+<script id="pageItem-template" type="text/x-handlebars-template">
+	{{#each items}}
+	<div data-role="page" data-title="{{title}}" id="item{{@index}}" data-url="item{{@index}}"  data-add-back-btn="true">
+		{{> header}}
+		<div data-role="content" data-iscroll class="scroll">
+			{{{image id 250 250 }}}
+			<h3>description</h3>
+			<p>
+				{{description}}
+			</p>
+			<h3>Tags</h3>
+			<p class="tags">
+				{{#each tags}}
+					{{this}}
+				{{/each}}
+			</p>
+		</div>
+		{{> footer}}
+	</div>
+	{{/each}}
+</script>
+
+<script id="pageLocation-template" type="text/x-handlebars-template">
+	{{#each items}}
+	<div data-role="page" data-title="{{title}}" id="location{{@index}}" data-url="location{{@index}}"  data-add-back-btn="true">
+		{{> header}}
+		<div data-role="content" data-iscroll class="scroll">
+			{{{image id 250 250 }}}
+			<h3>description</h3>
+			<p>
+				{{description}}
+			</p>
+			<h3>Tags</h3>
+			<p class="tags">
+				{{#each tags}}
+					{{this}}
+				{{/each}}
+			</p>
+		</div>
+		{{> footer}}
+	</div>
+	{{/each}}
+</script>
+
+<script id="pageSearch-template" type="text/x-handlebars-template">
+	<div data-role="page" data-title="Search" id="Search" data-url="Search"  data-add-back-btn="true">
+
+		{{> header}}
+
+		<div data-role="content" data-iscroll class="scroll">
+			<ul class="items"  data-role="listview" data-filter="true">
+				{{#each items}}
+				<li data-icon="false">
+					<a href="#item{{@index}}">
+						{{{image id 100 100 }}}
+						<h3>{{title}}</h3>
+						<p class="hiddenTags">{{#each tags}} {{@key}}:{{this}} {{/each}}</p>
+					</a>
+				</li>
+				{{/each}}
+			</ul>
+			<div id="FiltersSearch" class="filtersBar">
+				{{> filters}}
+			</div>
+		</div>
+
+		{{> footer}}
+	</div>
+
+</script>
+
+<script id="pageLocate-template" type="text/x-handlebars-template">
+	<div data-role="page" data-title="Locate" id="Locate" data-url="Locate"  data-add-back-btn="true">
+
+		{{> header}}
+
+		<div data-role="content" data-iscroll class="scroll">
+			<ul class="locations" data-role="listview" data-filter="true">
+				{{#each locations}}
+				<li>
+					<a href="#location{{@index}}">
+						{{{image id 100 100 }}}
+						<h3>{{title}}</h3>
+						<p>{{type}}</p>
+						<p>{{distance}}m</p>
+					</a>
+				</li>
+				{{/each}}
+			</ul>
+			<div id="FiltersLocate" class="filtersBar">
+				{{> filters}}
+			</div>
+		</div>
+
+		{{> footer}}
+	</div>
+
+</script>
+
+<script id="pageUser-template" type="text/x-handlebars-template">
+	<div data-role="page" data-title="User" id="User" data-url="User"  data-add-back-btn="true">
+		{{> header}}
+		<div data-role="content" data-iscroll class="scroll">
+			<div class="content-primary">
+				<form>
+					<ul data-role="listview" data-inset="true">
+						<li data-role="fieldcontain">
+				        	<label for="name">Name:</label>
+				        	<input type="text" name="name" id="name" value=""  />
+						</li>
+						<li data-role="fieldcontain">
+				        	<label for="password">Password:</label>
+				        	<input type="password" name="password" id="password" value=""  />
+						</li>
+						<li data-role="fieldcontain">
+				        	<label for="slider2">Notifications:</label>
+							<select name="slider2" id="slider2" data-role="slider">
+								<option value="off">Off</option>
+								<option value="on">On</option>
+							</select>
+						</li>
+						<li data-role="fieldcontain">
+				        	<label for="slider">Slider:</label>
+						 	<input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
+						</li>
+						<li class="ui-body ui-body-b">
+							<fieldset class="ui-grid-a">
+									<div class="ui-block-a"><button type="submit" data-theme="d">Cancel</button></div>
+									<div class="ui-block-b"><button type="submit" data-theme="a">Submit</button></div>
+						    </fieldset>
+						</li>
+						
+					</ul>	
+				</form>
+			</div>
+		</div>
+		{{> footer}}
+	</div>
+</script>
+
+</body>
+</html>
