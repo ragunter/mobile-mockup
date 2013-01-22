@@ -1,16 +1,22 @@
+String.prototype.trim = String.prototype.trim || function trim() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
+
+var validPages = ['#Search','#Locate','#User']
 var currentPage
 ,	doc = $(document)
 ,	setCurrentPage = function(id){
 		var page;
-		if(!id){id = '#Search';}
+		if(!id){
+			id = window.location.hash ? window.location.hash : '#Search';
+		}
 		else if(id instanceof jQuery){
 			page = id;
 			id = '#'+page[0].id;
-		}else if(typeof(id)=='string' && id.indexOf('#') == 0){
-			page = $(id);
 		}
-		if(page && page.length){
-			currentPage = id;
+		if(typeof(id)=='string' && id.indexOf('#') == 0 && validPages.indexOf(id)>=0){
+			page = $(id);
+			if(page && page.length){
+				currentPage = id;
+			}
 		}
 	}
 ;
@@ -128,7 +134,7 @@ $(function(){
 		+	t.pageItem(data)
 		+	t.pageFilter(data)
 		).appendTo($body)
-	,	closeMenu = (function(el){
+	,	closeMenus = (function(el){
 			return function(){el.hide();}
 		})($('.togglee'))
 	;
@@ -144,12 +150,13 @@ $(function(){
 			'#Search':{}
 		,	'#Locate':{}
 		}
-	,	add:function(filter,value,page){
-			var query = filter+':'+value
+	,	add:function(query,page){
+			var o = query.split(':')
+			,	filter = o.shift()
+			,	value = o.shift()
 			,	$container = $('.menuBar',page)
 			,	repo = filterManager.filters[page]
 			;
-
 			if(!(filter in repo)){
 				repo[filter] = $(t.filterIcon({name:filter,value:value}))
 										.css('display','none')
@@ -160,24 +167,31 @@ $(function(){
 				repo[filter].find('ul').hide();
 			}else{
 				repo[filter].find('#Filter'+filter+'_value').html(value);
-				repo[filter].find('a.toggler .ui-btn-text').html(query)
+				repo[filter].find('a.toggler .ui-btn-text').html(query);
 			}
-			var $input = $(page+' .ui-input-text');
-			$input.val($input.val() + query);
-			$input.trigger("change")
+			filterManager.changeInput(page,query,filter);
 		}
-	,	remove:function(filter,value,page){
-			var query = filter+':'+value
+	,	remove:function(query,page){
+			var o = query.split(':')
+			,	filter = o.shift()
+			,	value = o.shift()
 			,	repo = filterManager.filters[page]
 			;
 			if(filter in repo){
 				repo[filter].hide('fast',function(){
 					$(this).remove();
 				});
-				delete filters[filter];
-				var $input = $(page+' input.ui-input-text');
-				$input.val($input.val().replace(query,'')).trigger("change")
+				delete repo[filter];
 			}
+			filterManager.changeInput(page,'',filter)
+		}
+	,	changeInput:function(page,query,filter){
+			var regex = new RegExp('\\b'+filter+':.*\\b','ig')
+			,	$input = $(page+' input.ui-input-text')
+			;
+			query = query ? ' '+ query : '';
+			var text = ($input.val().replace(regex,'')+query).replace(/\s+/g, ' ').trim();
+			$input.val(text).trigger("change");
 		}
 	};
 
@@ -196,16 +210,16 @@ $(function(){
 	
 	$('.filter-select').on('click',function(){
 		var $o = $(this);
-		var option = $o.data('select').split(':');
 		$o.closest('.ui-dialog').dialog('close');
-		filterManager.add(option[0],option[1],currentPage);
+		filterManager.add($o.data('select'),currentPage);
 		closeMenus();
 	});
 	$('.menuBar').on('click','.filter-delete',function(){
 		var $o = $(this);
-		var option = $o.data('select').split(':');
-		filterManager.remove(option[0],option[1],currentPage);
+		filterManager.remove($o.data('select'),currentPage);
 	});
+
+	setCurrentPage();
 
 	// END EVENTS
 })
