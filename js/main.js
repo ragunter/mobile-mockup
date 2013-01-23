@@ -1,8 +1,20 @@
 String.prototype.trim = String.prototype.trim || function trim() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
 
 var validPages = ['#Search','#Locate','#User']
-var currentPage
+,	random = function(from,to){
+		return Math.floor(Math.random()*(to-from+1)+from);
+	}
+,	randomFromArr = function(arr){
+		return arr[random(0,arr.length-1)];
+	}
+,	placeHolderService = 'placehold.it'
+		// dummy text function
+,	l = (function(lorem){
+		return function(type,n){return lorem.createText(n,type);}
+	})(new Lorem)
+,	currentPage
 ,	doc = $(document)
+,	log = console && console.log ? console.log : alert
 ,	setCurrentPage = function(id){
 		var page;
 		if(!id){
@@ -19,47 +31,66 @@ var currentPage
 			}
 		}
 	}
+,	initSequence = {
+		'mobile':false
+	,	'page':false
+	,	'magento':false
+	}
+,	hasInit = false
+,	testInit = function(finished){
+		if(finished){
+			initSequence[finished] = true;
+			console.log('sequence finished: '+finished)
+		}
+		for(var n in initSequence){
+			if(initSequence[n] == false){return false;}
+		}
+		if(!hasInit){
+			hasInit = true;
+			init();
+		}
+		return true;
+	}
 ;
-
 
 doc.bind("mobileinit", function(){
 	$.mobile.page.prototype.options.addBackBtn = true;
+	$.extend($.mobile,{
+		autoInitializePage:false
+	,	defaultPageTransition:'slide'
+	,	phonegapNavigationEnabled:true
+	})
+	testInit('mobile');
 })
+Magento.on('init',function(ok){testInit('magento');})
+Magento.getData();
+jQuery(function(){testInit('page');})
+
 doc.bind('pagebeforechange',function(e,data){
 	if(data.options.role!=='dialog'){
 		setCurrentPage(data.toPage);
 	}
 })
-$(function(){
+Handlebars.registerHelper('fakeImage', function(n,width,height){
+	return (placeHolderService == 'placehold.it') ?
+		'<img src="http://placehold.it/'+width+'x'+height+'"  width="'+width+'" height="'+height+'">'
+		:
+		'<img src="http://lorempixel.com/'+width+'/'+height+'/fashion/'+n+'"  width="'+width+'" height="'+height+'">'
+		;
+});
+Handlebars.registerHelper('image', function(url){
+	return '<img src="'+url+'" width="100" height="100">'
+});
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+	return (v1 == v2) ? options.fn(this) : options.inverse(this);
+});
+
+var init = function(){
 
 	// SETTING UP
 
-	var placeHolderService = 'placehold.it';
-	var $templates = $('[type="text/x-handlebars-template"]');
-
-	Handlebars.registerHelper('image', function(n,width,height){
-		return (placeHolderService == 'placehold.it') ?
-			'<img src="http://placehold.it/'+width+'x'+height+'"  width="'+width+'" height="'+height+'">'
-			:
-			'<img src="http://lorempixel.com/'+width+'/'+height+'/fashion/'+n+'"  width="'+width+'" height="'+height+'">'
-			;
-	});
-	Handlebars.registerHelper('ifCond', function(v1, v2, options) {
-		return (v1 == v2) ? options.fn(this) : options.inverse(this);
-	});
-
 	var 
-		// dummy text function
-		l = (function(lorem){
-			return function(type,n){return lorem.createText(n,type);}
-		})(new Lorem)
-	,	random = function(from,to){
-	    return Math.floor(Math.random()*(to-from+1)+from);
-		}
-	,	randomFromArr = function(arr){
-		return arr[random(0,arr.length-1)];
-	}
-	,	filters = (function(f){
+		filters = (function(f){
 			for(var n in f){
 				f[n] = {name:n,values:f[n].split(',')};
 			}
@@ -70,20 +101,7 @@ $(function(){
 		})
 		// data
 	,	data = {
-			items: (function(items){
-				for(i=0;i<20;i++){
-					items.push({
-						title:l('w',2)
-					,	description:l('p',1)
-					,	id:i
-					,	tags:(function(t){
-							for(var n in filters){t[n] = randomFromArr(filters[n].values);}
-							return t;
-						})({})
-					});
-				}
-				return items;
-			})([])
+			items: Magento.items.orderBy(['entity_id'],'asc',50)
 		,	locations: (function(items){
 				for(i=0;i<20;i++){
 					items.push({
@@ -115,7 +133,7 @@ $(function(){
 		}
 		// object to hold the templates 
 	,	t = (function(t){
-			$templates.each(function(){
+			$('[type="text/x-handlebars-template"]').each(function(){
 				var n = this.id.replace('-template','')
 				,	p = Handlebars.compile(this.innerHTML); 
 				;
@@ -139,10 +157,10 @@ $(function(){
 		})($('.togglee'))
 	;
 
-	//$('.scroll').iscrollview();
+	console.log(data.items);
 
 	// END SETUP
-	
+
 	// FILTERS
 
 	var filterManager = {
@@ -219,8 +237,9 @@ $(function(){
 		filterManager.remove($o.data('select'),currentPage);
 	});
 
+	$.mobile.initializePage()
 	setCurrentPage();
 
 	// END EVENTS
-})
+}
 ;

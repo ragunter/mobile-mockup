@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"change",
+				"changeInput"
+			],
+			[
 				"filter",
 				"filterManager"
 			],
@@ -510,15 +514,19 @@
 			[
 				"tra",
 				"track_url"
-			],
-			[
-				"Secr",
-				"SecurityErrorEvent"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "js/main.js",
+			"settings":
+			{
+				"buffer_size": 5401,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -664,6 +672,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"cons",
+			"closeMe",
 			"data-iscroll",
 			"content",
 			"this.filters",
@@ -789,9 +799,7 @@
 			"place",
 			"try",
 			"prog",
-			"progr",
-			"_plac",
-			"show"
+			"progr"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -836,8 +844,36 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "js/main.js",
+					"settings":
+					{
+						"buffer_size": 5401,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								336,
+								336
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],

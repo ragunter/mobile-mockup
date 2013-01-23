@@ -1,9 +1,11 @@
 (function(scope){
 	var MagentoTable = function(name,attribute_number){
 		this._attribute_number = attribute_number;
+		this._attribute_name = 'attribute_set';
 		this._name = name;
 		this._data = null;
 		this._cache = {};
+		this._ids = [];
 	}
 	MagentoTable.prototype = {
 		constructor: MagentoTable
@@ -21,7 +23,7 @@
 			if(!this._cache[s]){this._cache[s] = this._data.where(where,options);}
 			return this._cache[s];
 		}
-	,	orderBy:function(ordering,dir,offset,limit){
+	,	orderBy:function(ordering,dir,limit,offset){
 			if(!this._data){throw new Error('data not initialized');return;}
 			if(!dir){dir = jOrder.asc;}
 			else{
@@ -38,8 +40,23 @@
 			}
 			if(!offset){offset = 0;}
 			if(!limit){limit = null;}
-			var s = JSON.stringify(where+dir+offset+limit);
-			if(!this._cache[s]){this._cache[s] = this._data.orderby(ordering,dir)}
+			var s = JSON.stringify(ordering+dir+offset+limit);
+			if(!this._cache[s]){this._cache[s] = this._data.orderby(ordering,dir,{offset:offset,limit:limit})}
+			return this._cache[s];
+		}
+	,	condition:function(){
+			var ids = this._ids
+			,	attribute_name = this._attribute_name
+			,	attribute_number = this._attribute_number
+			;
+			var cond = function(element, index, array){
+				if(element.hasOwnProperty(attribute_name) && element[attribute_name] == attribute_number && ids.indexOf(element.entity_id)<0){
+					ids.push(element.entity_id);
+					return true;	
+				};
+				return false;
+			}
+			return cond;
 		}
 	}
 
@@ -50,43 +67,52 @@
 	StoresTable.prototype.constructor = MagentoTable;
 
 	var ParkingsTable = function(){
-		MagentoTable.call(this,'parkings',214);
+		MagentoTable.call(this,'parkings',212);
 	}
 	ParkingsTable.prototype = new MagentoTable();
 	ParkingsTable.prototype.constructor = MagentoTable;
 
 	var MallsTable = function(){
-		MagentoTable.call(this,'malls',214);
+		MagentoTable.call(this,'malls',211);
 	}
 	MallsTable.prototype = new MagentoTable();
 	MallsTable.prototype.constructor = MagentoTable;
 
 	var ItemsTable = function(){
-		MagentoTable.call(this,'items',212);
+		MagentoTable.call(this,'items',210);
+		this._attribute_name = 'attribute_set';
 	}
 	ItemsTable.prototype = new MagentoTable();
 	ItemsTable.prototype.constructor = MagentoTable;
 	ItemsTable.prototype._setIndexes = function(table){
 		MagentoTable.prototype._setIndexes.call(this,table);
 		table.index('final_price_without_tax',['final_price_without_tax'],{grouped:true, ordered:true,type:jOrder.number});
-		table.index('name',['name'],{type:jOrder.string})
+		table.index('name',['name'],{grouped:true,type:jOrder.string})
 		return table;
+	}
+	ItemsTable.prototype.condition = function(){
+		var ids = this._ids
+		,	attribute_name = this._attribute_name
+		,	attribute_number = this._attribute_number
+		;
+		var cond = function(element, index, array){
+			if(element.hasOwnProperty('product_type') && ids.indexOf(element.entity_id)<0){
+				ids.push(element.entity_id);
+				return true;
+			};
+			return false;
+		}
+		return cond;
 	}
 
 	var parseData = function(data,cb){
 		var arrays = {'stores':[],'items':[],'parkings':[],'malls':[]}
-		,	attribute_number
-		,	ids = {'stores':[],'items':[],'parkings':[],'malls':[]}
+		,	condition
 		;
 		for(var n in arrays){
-			attribute_number = Magento[n]._attribute_number;
-			arrays[n] = data.filter(function(element, index, array){
-				if(element.hasOwnProperty('attribute_set') && element.attribute_set == attribute_number && ids[n].indexOf(element.entity_id)<0){
-					ids[n].push(element.entity_id);
-					return true;	
-				};
-				return false;
-			});
+			condition = Magento[n].condition();
+			arrays[n] = data.filter(condition);
+			//console.log(arrays[n]);
 			Magento[n].setData(arrays[n]);
 		}
 		cb(null,true);
