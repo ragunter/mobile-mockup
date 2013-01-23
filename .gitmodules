@@ -1,0 +1,3 @@
+[submodule "js/jorder"]
+	path = js/jorder
+	url = git://github.com/danstocker/jorder.git
