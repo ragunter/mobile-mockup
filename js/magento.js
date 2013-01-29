@@ -1,6 +1,6 @@
 (function(scope){
 	var MagentoTable = function(name,attribute_number){
-		this._attribute_number = attribute_number;
+		this._attribute_number = (attribute_number && attribute_number.length) ? attribute_number : [attribute_number];
 		this._attribute_name = 'attribute_set';
 		this._name = name;
 		this._data = null;
@@ -50,7 +50,7 @@
 			,	attribute_number = this._attribute_number
 			;
 			var cond = function(element, index, array){
-				if(element.hasOwnProperty(attribute_name) && element[attribute_name] == attribute_number && ids.indexOf(element.entity_id)<0){
+				if(element.hasOwnProperty(attribute_name) && attribute_number.indexOf(parseInt(element[attribute_name]))>=0 && ids.indexOf(element.entity_id)<0){
 					ids.push(element.entity_id);
 					return true;	
 				};
@@ -77,6 +77,12 @@
 	}
 	MallsTable.prototype = new MagentoTable();
 	MallsTable.prototype.constructor = MagentoTable;
+
+	var LocationsTable = function(){
+		MagentoTable.call(this,'locations',[214,212,211]);
+	}
+	LocationsTable.prototype = new MagentoTable();
+	LocationsTable.prototype.constructor = MagentoTable;
 
 	var ItemsTable = function(){
 		MagentoTable.call(this,'items',210);
@@ -106,7 +112,7 @@
 	}
 
 	var parseData = function(data,cb){
-		var arrays = {'stores':[],'items':[],'parkings':[],'malls':[]}
+		var arrays = {'items':[],'locations':[]}
 		,	condition
 		;
 		for(var n in arrays){
@@ -137,10 +143,8 @@
 	,	_version:null
 	,	_baseUrl:'./api/'
 	,	_listeners:{}
-	,	stores: new StoresTable()
 	,	items:new ItemsTable()
-	,	parkings:new ParkingsTable()
-	,	malls:new MallsTable()
+	,	locations:new LocationsTable()
 	,	getData:function(cb,forceRefresh){
 			if(!cb){cb = function(){};}
 			var that = this

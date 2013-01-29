@@ -1,20 +1,21 @@
-String.prototype.trim = String.prototype.trim || function trim() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
-
-var validPages = ['#Search','#Locate','#User']
-,	random = function(from,to){
-		return Math.floor(Math.random()*(to-from+1)+from);
+var pages = {
+	search:{
+		title:'Search'
 	}
-,	randomFromArr = function(arr){
-		return arr[random(0,arr.length-1)];
+,	locate:{
+		title:'Locate'
 	}
-,	placeHolderService = 'placehold.it'
-		// dummy text function
-,	l = (function(lorem){
-		return function(type,n){return lorem.createText(n,type);}
-	})(new Lorem)
+,	user:{
+		title:'User'
+	}
+}
+,	validPages = (function(p,o){
+		for(var n in p){
+			o.push('#'+p[n].title);
+		}
+		return o;
+	})(pages,[])
 ,	currentPage
-,	doc = $(document)
-,	log = console && console.log ? console.log : alert
 ,	setCurrentPage = function(id){
 		var page;
 		if(!id){
@@ -31,196 +32,58 @@ var validPages = ['#Search','#Locate','#User']
 			}
 		}
 	}
-,	initSequence = {
-		'mobile':false
-	,	'page':false
-	,	'magento':false
-	}
-,	hasInit = false
-,	testInit = function(finished){
-		if(finished){
-			initSequence[finished] = true;
-			console.log('sequence finished: '+finished)
-		}
-		for(var n in initSequence){
-			if(initSequence[n] == false){return false;}
-		}
-		if(!hasInit){
-			hasInit = true;
-			init();
-		}
-		return true;
-	}
-;
 
 doc.bind("mobileinit", function(){
 	$.mobile.page.prototype.options.addBackBtn = true;
 	$.extend($.mobile,{
 		autoInitializePage:false
-	,	defaultPageTransition:'slide'
+	,	defaultPageTransition:'none'
 	,	phonegapNavigationEnabled:true
 	})
 	testInit('mobile');
-})
+});
 Magento.on('init',function(ok){testInit('magento');})
 Magento.getData();
 jQuery(function(){testInit('page');})
 
 doc.bind('pagebeforechange',function(e,data){
-	if(data.options.role!=='dialog'){
-		setCurrentPage(data.toPage);
-	}
+	if(data.options.role!=='dialog'){setCurrentPage(data.toPage);}
 })
-Handlebars.registerHelper('fakeImage', function(n,width,height){
-	return (placeHolderService == 'placehold.it') ?
-		'<img src="http://placehold.it/'+width+'x'+height+'"  width="'+width+'" height="'+height+'">'
-		:
-		'<img src="http://lorempixel.com/'+width+'/'+height+'/fashion/'+n+'"  width="'+width+'" height="'+height+'">'
-		;
-});
-Handlebars.registerHelper('image', function(url){
-	return '<img src="'+url+'" width="100" height="100">'
-});
-Handlebars.registerHelper('ifCond', function(v1, v2, options) {
-	return (v1 == v2) ? options.fn(this) : options.inverse(this);
-});
 
 var init = function(){
 
 	// SETTING UP
 
 	var 
-		filters = (function(f){
-			for(var n in f){
-				f[n] = {name:n,values:f[n].split(',')};
-			}
-			return f;
-		})({
-			color:'red,green,blue'
-		,	type:'clothes,blah,bluh'
-		})
-		// data
-	,	data = {
-			items: Magento.items.orderBy(['entity_id'],'asc',50)
-		,	locations: (function(items){
-				for(i=0;i<20;i++){
-					items.push({
-						title:l('w',2)
-					,	description:l('p',1)
-					,	id:i
-					,	type: (random(1,4)==1)? 'parking' : 'store'
-					,	distance: (random(1,100))
-					,	tags:(function(t){
-							for(var n in filters){t[n] = randomFromArr(filters[n].values);}
-							return t;
-						})({})
-					});
-				}
-				return items;
-			})([])
+		data = {
+			items: Magento.items.orderBy(['entity_id'],'asc')
+		,	locations: Magento.locations.orderBy(['entity_id'],'asc')
 		,	filters:filters
 		}
-	,	pages = {
-			search:{
-				title:'Search'
-			}
-		,	locate:{
-				title:'Locate'
-			}
-		,	user:{
-				title:'User'
-			}
-		}
-		// object to hold the templates 
-	,	t = (function(t){
-			$('[type="text/x-handlebars-template"]').each(function(){
-				var n = this.id.replace('-template','')
-				,	p = Handlebars.compile(this.innerHTML); 
-				;
-				this.className=="partial" ?  Handlebars.registerPartial(n,p) : null;
-				t[n] = p;
-				$(this).remove();
-			})
-			return t;
-		})({})
 	,	$body = $('body')
-		// fill the templates
+	,	filterManager = makeFilterManager(pages)
 	,	pagesHtml = $(
-			t.pageSearch($.extend(pages.search,data))
-		+	t.pageLocate($.extend(pages.locate,data))
-		+	t.pageUser($.extend(pages.user,data))
-		+	t.pageItem(data)
-		+	t.pageFilter(data)
+			t.search($.extend(pages.search,data))
+		+	t.locate($.extend(pages.locate,data))
+		+	t.user($.extend(pages.user,data))
+		+	t.item.each(data.items)
+		+	t.location.each(data.locations)
+		+	t.filter.each($.extend({},data.filters))
 		).appendTo($body)
-	,	closeMenus = (function(el){
-			return function(){el.hide();}
-		})($('.togglee'))
+	,	closeMenus = function($not){
+			var $els = ($not && $not.length) ? $('.togglee').not($not.toggle()) : $('.togglee');
+			$els.hide();
+		}
+	,	oldVal = ''
 	;
-
-	console.log(data.items);
-
 	// END SETUP
-
-	// FILTERS
-
-	var filterManager = {
-		filters:{
-			'#Search':{}
-		,	'#Locate':{}
-		}
-	,	add:function(query,page){
-			var o = query.split(':')
-			,	filter = o.shift()
-			,	value = o.shift()
-			,	$container = $('.menuBar',page)
-			,	repo = filterManager.filters[page]
-			;
-			if(!(filter in repo)){
-				repo[filter] = $(t.filterIcon({name:filter,value:value}))
-										.css('display','none')
-										.appendTo($container)
-										.trigger('create')
-										.show('slow')
-										;
-				repo[filter].find('ul').hide();
-			}else{
-				repo[filter].find('#Filter'+filter+'_value').html(value);
-				repo[filter].find('a.toggler .ui-btn-text').html(query);
-			}
-			filterManager.changeInput(page,query,filter);
-		}
-	,	remove:function(query,page){
-			var o = query.split(':')
-			,	filter = o.shift()
-			,	value = o.shift()
-			,	repo = filterManager.filters[page]
-			;
-			if(filter in repo){
-				repo[filter].hide('fast',function(){
-					$(this).remove();
-				});
-				delete repo[filter];
-			}
-			filterManager.changeInput(page,'',filter)
-		}
-	,	changeInput:function(page,query,filter){
-			var regex = new RegExp('\\b'+filter+':.*\\b','ig')
-			,	$input = $(page+' input.ui-input-text')
-			;
-			query = query ? ' '+ query : '';
-			var text = ($input.val().replace(regex,'')+query).replace(/\s+/g, ' ').trim();
-			$input.val(text).trigger("change");
-		}
-	};
-
-	// END FILTERS
 
 	// EVENTS
 
 	$body
 		.on('click',function(){$('.togglee').hide();})
 		.on("click",'.toggler',function(evt){
-   			$(this).closest('.toggle').find('.togglee').toggle(); 
+			closeMenus($(this).closest('.toggle').find('.togglee'));
    			evt.stopPropagation();
    			evt.preventDefault();
 		})
@@ -232,14 +95,74 @@ var init = function(){
 		filterManager.add($o.data('select'),currentPage);
 		closeMenus();
 	});
+	$('.fulltextbutton').on('click',function(){
+		var $o = $(this);
+		var newVal = $('#FullTextInput').val();
+		$o.closest('.ui-dialog').dialog('close');
+		filterManager.addFilterWidget(currentPage,'text',newVal,newVal);
+		filterManager.changeInput(currentPage,oldVal,newVal);
+		oldVal = newVal;
+		closeMenus();
+	})
 	$('.menuBar').on('click','.filter-delete',function(){
 		var $o = $(this);
-		filterManager.remove($o.data('select'),currentPage);
+		if($o[0].id== 'DeleteFiltertext'){
+			filterManager.changeInput(currentPage,oldVal,'');
+			oldVal = '';
+			$('#FullTextInput').val('')
+			filterManager.removeFilterWidget(currentPage,'text');
+		}else{
+			filterManager.remove($o.data('select'),currentPage);
+		}
+		closeMenus();
 	});
 
-	$.mobile.initializePage()
-	setCurrentPage();
+	var hasScrolled = {
+		old:false
+	,	curr:false
+	};
+
+	var onScroll = function($el){
+		var $searchbar = $el.siblings('.filtersBar:first');
+		return function(evt){
+			hasScrolled.curr = {
+				bar:$searchbar
+			,	y:evt.y
+			}
+			closeMenus();
+		}
+	}
+
+	var checkScroll = function(){
+		var oldY, newY, bar;
+		if(hasScrolled.curr){
+			oldY = hasScrolled.old && hasScrolled.old.y ? hasScrolled.old.y : 0;
+			newY = hasScrolled.curr.y;
+			bar = hasScrolled.curr.bar;
+			if(newY<oldY){
+				bar.slideDown();
+			}else if(newY>60){
+				bar.slideUp();
+			}
+			hasScrolled.old = hasScrolled.curr;
+			hasScrolled.curr = false;
+		}
+	}
+
+	var scrollInterval = setInterval(checkScroll,500);
 
 	// END EVENTS
+
+	$.mobile.initializePage()
+	$("img.lazy").show().lazyload({
+		effect:'fadeIn'
+	});
+	$('.iscrollPane').iscrollview({preventTouchHover:true}).each(function(){
+		var $el = $(this);
+		$el.bind('iscroll_onscrollstart',onScroll($el))
+	})
+	setCurrentPage();
+
+	$('body').removeClass('loading');
 }
 ;
