@@ -1,15 +1,15 @@
-<div class="page" data-role="page" data-title="{{title}}" id="location{{@index}}" data-url="location{{@index}}"  data-add-back-btn="true">
+<div class="page" data-role="page" data-title="{{title}}" id="location{{@index}}" data-url="location{{@index}}"  data-add-back-btn="true" data-page-type="location">
 	{{> header}}
 	<div data-role="content" data-iscroll class="scroll">
+		<h1>{{name}}</h1>
+		<div id="Map{{@index}}" class="map" {{{makeCoordinates coordinates}}} data-location-name="{{name}}"></div>
 		<h3>description</h3>
 		<p>
 			{{description}}
 		</p>
 		<h3>Tags</h3>
 		<p class="tags">
-			{{#each tags}}
-				{{this}}
-			{{/each}}
+			{{{split tags}}}
 		</p>
 	</div>
 	{{> footer}}

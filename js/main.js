@@ -56,6 +56,14 @@ doc.bind('pagebeforechange',function(e,data){
 })
 doc.bind('pagechange',function(e,data){
 	activePage = data.toPage.attr('id');
+	pageType = data.toPage.data('page-type');
+	if(pageType == 'location'){
+		var $map = $('.map',data.toPage).not('.loaded');
+		if($map.length){
+			map.google($map[0],$map.data('lat'),$map.data('long'),$map.data('location-name'))
+			$map.addClass('.loaded');
+		}
+	}
 })
 
 var init = function(){

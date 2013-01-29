@@ -61,6 +61,42 @@ var templateHelpers = {
 		}
 		return res;
 	}
+,	makeCoordinates:function(coord){
+		if(coord){
+			coord = coord.split(',');
+			return ' data-lat="'+coord[0]+'" data-long="'+coord[1]+'"';
+		}
+		return '';
+	}
+,	makeDistance:function(coord){
+		if(coord){
+			coord = coord.split(',');
+			return getDistance(coord[0],coord[1]);
+		}
+		return templateHelpers.locale('unknown_distance');
+	}
+,	getDistance:function(lat2,lon2,lat1,lon1){
+		if(
+			(typeof lat2 != 'string' && typeof lat2 != 'number')
+		||	(typeof lon2 != 'string' && typeof lon2 != 'number')
+		){
+			return '';
+		}
+		if(typeof lat1 != 'string' || typeof lat1 != 'number'){
+			lat1 = null;
+			lon1 = null;
+		}
+		var dist = map.distance(lat2,lon2);
+		if(dist){
+			dist = templateHelpers.naturalDistance(dist);
+			return templateHelpers.locale('distance_from_you').replace('%s',dist);
+		}
+		return '';
+	}
+,	naturalDistance:function(km){
+		//TODO: make distance more natural
+		return meters+'m';
+	}
 };
 
 (function(){

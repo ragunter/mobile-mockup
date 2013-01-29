@@ -30,6 +30,7 @@ var	doc = $(document)
 	}
 ;
 
+
 var t = (function(t){
 
 	var templates = {
