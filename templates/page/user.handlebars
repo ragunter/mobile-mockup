@@ -1,0 +1,38 @@
+<div data-role="page" data-title="{{locale 'User'}}" id="User" data-url="User"  data-add-back-btn="true">
+	{{> header}}
+	<div data-role="content" data-iscroll class="scroll">
+		<div class="content-primary">
+			<form>
+				<ul data-role="listview" data-inset="true">
+					<li data-role="fieldcontain">
+			        	<label for="name">Name:</label>
+			        	<input type="text" name="name" id="name" value=""  />
+					</li>
+					<li data-role="fieldcontain">
+			        	<label for="password">Password:</label>
+			        	<input type="password" name="password" id="password" value=""  />
+					</li>
+					<li data-role="fieldcontain">
+			        	<label for="slider2">Notifications:</label>
+						<select name="slider2" id="slider2" data-role="slider">
+							<option value="off">Off</option>
+							<option value="on">On</option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+			        	<label for="slider">Slider:</label>
+					 	<input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
+					</li>
+					<li class="ui-body ui-body-b">
+						<fieldset class="ui-grid-a">
+								<div class="ui-block-a"><button type="submit" data-theme="d">Cancel</button></div>
+								<div class="ui-block-b"><button type="submit" data-theme="a">Submit</button></div>
+					    </fieldset>
+					</li>
+					
+				</ul>	
+			</form>
+		</div>
+	</div>
+	{{> footer}}
+</div>

@@ -1,0 +1,9 @@
+<div data-role="footer" data-position="fixed" data-id="footer" data-tap-toggle="false">
+	<div data-role="navbar" data-iconpos="top">
+		<ul>
+			<li><a href="#Search" data-icon="search" {{#ifCond title 'Search'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>{{locale 'Search'}}</a></li>
+			<li><a href="#Locate" data-icon="star" {{#ifCond title 'Locate'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>{{locale 'Locate'}}</a></li>
+			<li><a href="#User" data-icon="gear" {{#ifCond title 'User'}}class="ui-btn-active ui-state-persist"{{/ifCond}}>{{locale 'User'}}</a></li>
+		</ul>
+	</div>
+</div>

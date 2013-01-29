@@ -1,0 +1,16 @@
+<div id="Menu{{title}}" class="menuBar">
+	<div id="MainSelector" class="filterIcon toggle">
+		<input type="button" id="Criterias" value="{{locale 'add_criteria'}}" data-inline="true" class="menu toggler" data-icon="search">
+		<ul data-role="listview" class="togglee" style="display:none" data-theme="b">
+		{{#each filters}}
+			<li>
+				<a href="#Filter{{@key}}" data-rel="dialog">
+					<div class="filter-main-icon filter-icon-{{key}}"></div>
+					<h3 class="filter-value">{{name}}</h3>
+				</a>
+			</li>
+		{{/each}}
+		</ul>
+	</div>
+	<div class="criteria-helper">&larr; {{locale 'search_help'}}</div>
+</div>

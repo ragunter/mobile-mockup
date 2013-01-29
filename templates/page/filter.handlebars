@@ -1,0 +1,22 @@
+<div data-role="page" data-title="{{@key}}" id="Filter{{@key}}" data-url="Filter{{@key}}" data-add-back-btn="true" data-theme="b">
+
+	{{> header}}
+
+	<div data-role="content" data-iscroll class="scroll">
+		{{#if values}}
+		<ul id="sub_{{name}}" data-role="listview">
+			{{#each values}}
+				<li>
+					<a href="#" class="filter-select" data-select="{{../key}}:{{this}}:{{@key}}">
+						{{@key}}
+					</a>
+				</li>
+			{{/each}}
+		</ul>
+		{{else}}
+			{{{contents}}}
+		{{/if}}
+	</div>
+
+	{{> footer}}
+</div>

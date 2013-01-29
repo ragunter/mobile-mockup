@@ -1,0 +1,22 @@
+<div class="page" data-role="page" data-title="{{locale 'Search'}}" id="Search" data-url="Search"  data-add-back-btn="true">
+
+	{{> header}}
+	<div data-role="content" class="iscrollPane">
+		<ul class="items"  data-role="listview" data-filter="true">{{#each items}}<li data-icon="false">
+				<a href="#item{{@index}}">
+					{{{image image_url 100 100}}}
+					<h3>{{name}}</h3>
+					<p class="hiddenTags">
+						{{outputFilters this}}
+						{{material}}
+						{{tags}}
+						{{season}}
+					</p>
+				</a>
+			</li>{{/each}}</ul>
+	</div>
+	<div id="FiltersSearch" class="filtersBar">
+		{{> filters}}
+	</div>
+	{{> footer}}
+</div>

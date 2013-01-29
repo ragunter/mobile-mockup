@@ -1,0 +1,16 @@
+<div data-role="page" data-title="{{title}}" id="location{{@index}}" data-url="location{{@index}}"  data-add-back-btn="true">
+	{{> header}}
+	<div data-role="content" data-iscroll class="scroll">
+		<h3>description</h3>
+		<p>
+			{{description}}
+		</p>
+		<h3>Tags</h3>
+		<p class="tags">
+			{{#each tags}}
+				{{this}}
+			{{/each}}
+		</p>
+	</div>
+	{{> footer}}
+</div>

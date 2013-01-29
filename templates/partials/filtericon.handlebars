@@ -1,0 +1,12 @@
+<div class="filterIcon toggle" id="FilterIcon{{filter}}">
+	<a href="#" class="toggler" data-role="button"><span class="filter-icon filter-icon-{{filter}}">{{filter}}:</span><span class="filter-value">{{name}}</span></a>
+	<ul data-role="listview" class="togglee" data-theme="b">
+		<li>
+			<a href="#Filter{{filter}}">
+				<h3 id="Filter{{filter}}_value">{{name}}</h3>
+				<p>{{locale 'edit_criteria'}}</p>
+			</a>
+		</li>
+		<li id="DeleteFilter{{filter}}" data-icon="delete" data-mini="true" data-theme="e" data-select="{{filter}}:{{name}}" class="filter-delete"><a href="#">{{locale 'remove_criteria'}}</a></li>
+	</ul>
+</div>
