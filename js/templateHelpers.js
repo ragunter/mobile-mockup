@@ -7,6 +7,7 @@ var templateHelpers = {
 			;
 	}
 ,	split:function(str){
+		if(!str){return '';}
 		str = str.split(',');
 		for(var i = 0; i<str.length;i++){
 			str[i] = '<a href="#">'+str[i].trim()+'</a>'
@@ -71,7 +72,7 @@ var templateHelpers = {
 ,	makeDistance:function(coord){
 		if(coord){
 			coord = coord.split(',');
-			return getDistance(coord[0],coord[1]);
+			return templateHelpers.getDistance(coord[0],coord[1]);
 		}
 		return templateHelpers.locale('unknown_distance');
 	}
@@ -93,9 +94,9 @@ var templateHelpers = {
 		}
 		return '';
 	}
-,	naturalDistance:function(km){
-		//TODO: make distance more natural
-		return meters+'m';
+,	naturalDistance:function(num){
+		var str = Unit(num+'km').best();
+		return str;
 	}
 };
 

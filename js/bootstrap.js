@@ -12,6 +12,7 @@ var	doc = $(document)
 	,	'page':false
 	,	'magento':false
 	,	'templates':false
+	,	'location':false
 	}
 ,	hasInit = false
 ,	testInit = function(finished){
@@ -90,3 +91,7 @@ var t = (function(t){
 	return t;
 
 })({})
+
+map.getCurrentLocation(function(err,coords){
+	testInit('location');
+});

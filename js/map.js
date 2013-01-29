@@ -10,6 +10,7 @@ var map = {
 ,	_listeners:{}
 ,	_marker:null
 ,	_changed:false
+,	_getCurrentPositionCalled:false
 ,	available:function(){
 		return map._init && map._available
 	}
@@ -32,10 +33,10 @@ var map = {
 		}
 	}
 ,	latitude:function(callback){
-		map.getCoordinate('latitude',callback);
+		return map.getCoordinate('latitude',callback);
 	}
 ,	longitude:function(callback){
-		map.getCoordinate('longitude',callback);
+		return map.getCoordinate('longitude',callback);
 	}
 ,	marker:function(gMap){
 		if(map._marker == false){return false;}
@@ -45,18 +46,30 @@ var map = {
 					map.coords.latitude
 				,	map.coords.longitude
 				,	templateHelpers.locale('your_position')
+				,	null
+				,	{
+						fillColor:'#d3ff00'
+					,	strokeColor:'#000'
+					,	path:google.maps.SymbolPath.CIRCLE
+					,	fillOpacity:1
+					,	radius:20
+					,	scale:5
+					,	strokeWeight:2
+					}
 				)
 			}else{
 				if(!this._available){mp._marker = false;}
 				return false;
 			}
 		}
-		if(gMap){
+		if(gMap instanceof google.maps.Map){
 			map._marker.setMap(gMap);
+		}else if(gMap instanceof google.maps.LatLng){
+			map._marker.setPosition(gMap);
 		}
 		return map._marker;
 	}
-,	createMarker:function(lat,lon,title,gMap){
+,	createMarker:function(lat,lon,title,gMap,icon){
 		var latlng
 		if(lat instanceof google.maps.LatLng){
 			gMap = title;
@@ -69,7 +82,7 @@ var map = {
 		var marker = new google.maps.Marker({
 			position:latlng
 		,	title:title
-		//TODO: how to set a different color to the marker
+		,	icon:icon
 		});
 		if(gMap){marker.setMap(gMap);}
 		return marker
@@ -80,7 +93,7 @@ var map = {
 			return map.coords[name];
 		}
 		var cb = function(coords){
-			callback(null,coords[name]);
+			if(callback){callback(null,coords[name])};
 			map.removeEventListner(cb);
 		}
 		map.addEventListener(map.INIT,cb);
@@ -89,12 +102,12 @@ var map = {
 	}
 ,	updateLocation:function(position){
 		if(map.coords.latitude != position.coords.latitude || map.coords.longitude != position.coords.longitude){
-			map.coords.latitude = position.coords.latitude;
-			map.coords.longitude = position.coords.longitude;
+			map.coords.latitude = Number(position.coords.latitude);
+			map.coords.longitude = Number(position.coords.longitude);
 			map._changed = true;
 			if(map._marker!==false){
-				//TODO: how to update the marker
-				//map.marker().updateLocation(map.coords.longitude,map.coords.latitude)
+				var latlng = new google.maps.LatLng(map.coords.latitude,map.coords.longitude);
+				map.marker(latlng);
 			}
 			map.trigger(map.UPDATE,map.coords);
 		}else{
@@ -112,18 +125,18 @@ var map = {
 		}
 		else if(!navigator.geolocation){
 			map._available = false;
-			map._init = true;
 			return false;
 		};
+		map._available = true;
 		map._init = true;
 		navigator.geolocation.getCurrentPosition(
 			function(position){
-				if (map._init){return;}
-				map.coords.latitude = position.coords.latitude;
-				map.coords.longitude = position.coords.longitude;
+				if(map._getCurrentPositionCalled){return;}
+				map.updateLocation(position);
 				map.trigger(map.INIT,map.coords);
 				if(callback){callback(null,map.coords);}
 				map._positionWatch = navigator.geolocation.watchPosition(map.updateLocation);
+				map._getCurrentPositionCalled = true;
 			}
 		,	function(error){
 				if(callback){
@@ -141,9 +154,13 @@ var map = {
 ,	distance: function(lat2,lon2,lat1,lon1){
 		if(map._init && map._available == false){return false;}
 		if(!lat1){lat1 = map.latitude();}
-		if(!lat2){lat2 = map.longitude();}
-		if(lat1 == NaN || lat2 == NaN){return false;}
-		return (new LatLon(lat1,lon1)).distanceTo(new LatLon(lat2,lon2));
+		if(!lon1){lon1 = map.longitude();}
+		if(isNaN(lat1) || isNaN(lat2)){return false;}
+		lon2 = Number(lon2);
+		lat2 = Number(lat2);
+		var point1 = new LatLon(lat1,lon1);
+		var point2 = new LatLon(lat2,lon2);
+		return point1.distanceTo(point2);
 	}
 ,	google: function($el,$lat,$long,title){
 		var latlng = new google.maps.LatLng($lat, $long);

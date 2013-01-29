@@ -9,5 +9,5 @@ var locale = {
 ,	search_help:'Use this button to refine your search'
 ,	your_location:'your current position'
 ,	distance_from_you:'at %s from you'
-.	unknown_distance:'unknown distance'
+,	unknown_distance:'unknown distance'
 }
