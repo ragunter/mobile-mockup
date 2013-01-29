@@ -4,3 +4,6 @@
 [submodule "js/jquery.mobile.simultaneous-transitions"]
 	path = js/jquery.mobile.simultaneous-transitions
 	url = git://github.com/watusi/jquery.mobile.simultaneous-transitions.git
+[submodule "js/jquery-mobile-iscrollview"]
+	path = js/jquery-mobile-iscrollview
+	url = git://github.com/watusi/jquery-mobile-iscrollview.git
