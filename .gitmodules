@@ -1,3 +1,6 @@
 [submodule "js/jorder"]
 	path = js/jorder
 	url = git://github.com/danstocker/jorder.git
+[submodule "js/jquery.mobile.simultaneous-transitions"]
+	path = js/jquery.mobile.simultaneous-transitions
+	url = git://github.com/watusi/jquery.mobile.simultaneous-transitions.git
