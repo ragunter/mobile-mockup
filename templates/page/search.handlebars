@@ -1,7 +1,7 @@
 <div class="page" data-role="page" data-title="{{locale 'Search'}}" id="Search" data-url="Search"  data-add-back-btn="true">
 
 	{{> header}}
-	<div data-role="content" class="iscrollPane">
+	<div data-role="content" class="iscrollPane" id="ContentSearch">
 		<ul class="items"  data-role="listview" data-filter="true">{{#each items}}<li data-icon="false">
 				<a href="#item{{@index}}">
 					{{{image image_url 100 100}}}

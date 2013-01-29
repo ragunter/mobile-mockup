@@ -16,6 +16,8 @@ var pages = {
 		return o;
 	})(pages,[])
 ,	currentPage
+,	activePage
+,	scrollWatch = {}
 ,	setCurrentPage = function(id){
 		var page;
 		if(!id){
@@ -48,6 +50,12 @@ jQuery(function(){testInit('page');})
 
 doc.bind('pagebeforechange',function(e,data){
 	if(data.options.role!=='dialog'){setCurrentPage(data.toPage);}
+	if(scrollWatch[activePage]){
+		scrollWatch[activePage].hasScrolled = false;
+	}
+})
+doc.bind('pagechange',function(e,data){
+	activePage = data.toPage.attr('id');
 })
 
 var init = function(){
@@ -117,35 +125,42 @@ var init = function(){
 		closeMenus();
 	});
 
-	var hasScrolled = {
-		old:false
-	,	curr:false
-	};
-
 	var onScroll = function($el){
 		var $searchbar = $el.siblings('.filtersBar:first');
-		return function(evt){
-			hasScrolled.curr = {
-				bar:$searchbar
-			,	y:evt.y
-			}
-			closeMenus();
+		var id = $el.closest('.page').attr('id');
+		scrollWatch[id] = {bar:$searchbar, old:0, curr:0,hasScrolled:false,hidden:false};
+		return function(evt,o){
+			var repo = scrollWatch.hasOwnProperty(activePage) ? 
+				scrollWatch[activePage]
+				:
+				false
+			;
+			if(!repo){return;}
+			repo.curr = o.iscrollview.y();
+			repo.hasScrolled = true;
 		}
 	}
 
 	var checkScroll = function(){
-		var oldY, newY, bar;
-		if(hasScrolled.curr){
-			oldY = hasScrolled.old && hasScrolled.old.y ? hasScrolled.old.y : 0;
-			newY = hasScrolled.curr.y;
-			bar = hasScrolled.curr.bar;
-			if(newY<oldY){
-				bar.slideDown();
-			}else if(newY>60){
+		var oldY, newY, bar,repo;
+		if((repo = scrollWatch[activePage]) && repo.hasScrolled == true){
+			var oldY = repo.old || 0
+			,	newY = repo.curr
+			,	bar = repo.bar
+			,	hidden = repo.hidden
+			,	distance = Math.abs(newY - oldY)
+			;
+			repo.old = repo.curr;
+			repo.hasScrolled = false;
+			console.log(oldY,newY, distance)	
+			if(newY < oldY && newY < -60 && !hidden){
 				bar.slideUp();
+				repo.hidden = true;
+			}else if(hidden && (distance > 100 || newY>-60)){
+				bar.slideDown();
+				repo.hidden = false;
 			}
-			hasScrolled.old = hasScrolled.curr;
-			hasScrolled.curr = false;
+
 		}
 	}
 
@@ -157,9 +172,9 @@ var init = function(){
 	$("img.lazy").show().lazyload({
 		effect:'fadeIn'
 	});
-	$('.iscrollPane').iscrollview({preventTouchHover:true}).each(function(){
+	$('.iscrollPane').iscrollview({preventTouchHover:false}).each(function(){
 		var $el = $(this);
-		$el.bind('iscroll_onscrollstart',onScroll($el))
+		$el.bind('iscroll_onscrollmove',onScroll($el))
 	})
 	setCurrentPage();
 
