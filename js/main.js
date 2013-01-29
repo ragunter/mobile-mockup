@@ -64,8 +64,8 @@ var init = function(){
 
 	var 
 		data = {
-			items: Magento.items.orderBy(['entity_id'],'asc')
-		,	locations: Magento.locations.orderBy(['entity_id'],'asc')
+			items: Magento.items.orderBy(['entity_id'],'asc',50)
+		,	locations: Magento.locations.orderBy(['entity_id'],'asc',50)
 		,	filters:filters
 		}
 	,	$body = $('body')

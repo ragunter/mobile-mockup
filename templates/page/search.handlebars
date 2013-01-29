@@ -2,18 +2,7 @@
 
 	{{> header}}
 	<div data-role="content" class="iscrollPane" id="ContentSearch">
-		<ul class="items"  data-role="listview" data-filter="true">{{#each items}}<li data-icon="false">
-				<a href="#item{{@index}}">
-					{{{image image_url 100 100}}}
-					<h3>{{name}}</h3>
-					<p class="hiddenTags">
-						{{outputFilters this}}
-						{{material}}
-						{{tags}}
-						{{season}}
-					</p>
-				</a>
-			</li>{{/each}}</ul>
+		<ul class="items"  data-role="listview" data-filter="true">{{#each items}}{{> item}}{{/each}}</ul>
 	</div>
 	<div id="FiltersSearch" class="filtersBar">
 		{{> filters}}

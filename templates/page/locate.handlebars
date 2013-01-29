@@ -3,16 +3,7 @@
 	{{> header}}
 
 	<div data-role="content" class="iscrollPane" id="ContentLocate">
-		<ul class="locations" data-role="listview" data-filter="true">
-			{{#each locations}}
-			<li>
-				<a href="#location{{@index}}">
-					<h3>{{name}}</h3>
-					<p>250m</p>
-				</a>
-			</li>
-			{{/each}}
-		</ul>
+		<ul class="locations" data-role="listview" data-filter="true">{{#each locations}}{{> location}}{{/each}}</ul>
 	</div>
 	<div id="FiltersLocate" class="filtersBar">
 		{{> filters}}
