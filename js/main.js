@@ -161,7 +161,6 @@ var init = function(){
 			;
 			repo.old = repo.curr;
 			repo.hasScrolled = false;
-			console.log(oldY,newY, distance)	
 			if(newY < oldY && newY < -60 && !hidden){
 				bar.slideUp();
 				repo.hidden = true;
