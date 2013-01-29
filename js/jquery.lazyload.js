@@ -97,7 +97,8 @@
                         .bind("load", function() {
                             $self
                                 .hide()
-                                .attr("src", $self.data(settings.data_attribute))
+                                .addClass('lazyLoaded')
+                                .css('background-image','url('+$self.data(settings.data_attribute)+')')
                                 [settings.effect](settings.effect_speed);
                             self.loaded = true;
 

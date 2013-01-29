@@ -1,6 +1,8 @@
 @import "elements.less";
 @import "tweaks.less";
 @raghunterGreen:#d3ff00;
+@thumbnailWidth:160px;
+@thumbnailHeight:180px;
 
 .ui-page > div {
 	-webkit-transform: translateZ(0);
@@ -12,7 +14,14 @@ body{
 
 .lazy {
 	display: none;
-	background:url(../res/img-load.gif) no-repeat 50% 50%;
+	background:transparent url(../res/img-load.gif) no-repeat 50% 50%;
+	border:0 none;
+	&.lazyLoaded{
+		-webkit-background-size: contain;
+		-moz-background-size: contain;
+		-o-background-size: contain;
+		background-size: contain;
+	}
 }
 
 .loading{
@@ -72,7 +81,7 @@ body{
 	height:60px;
 	width:100%;
 	background:@raghunterGreen;
-	top:70px;
+	top:68px;
 	.ui-btn-up-c{
 		float:left;
 		.rounded(0);
@@ -130,32 +139,62 @@ body{
 }
 
 .items li, .items li > div, .items li > div > div{
-	width:160px;
-	height:160px;
+	width:@thumbnailWidth;
+	height:@thumbnailHeight;
 }
 
 .items .ui-li-has-thumb .ui-btn-inner a.ui-link-inherit, .items .ui-li-static.ui-li-has-thumb{
 	padding:0;
 }
 
+.items.ui-listview{
+	.ui-btn-up-c, 
+	.ui-btn-down-c,
+	.ui-btn-hover-c,
+	.ui-btn-inner.ui-li{
+		border:none;
+	}
+}
+
+.items{
+	background:#fff;
+}
+
 .items li{
 	display:inline-block;
+	overflow:hidden;
+	width:@thumbnailWidth;
+	height:@thumbnailHeight;
 }
-	.items li a{
+	.items li a, .items .ui-li .ui-btn-inner a.ui-link-inherit,.items .ui-li-static.ui-li{
 		width:100%;
 		height:100%;
 		text-align:center;
 		position:relative;
+		padding:0;
 		display:block;
 	}
 
-	.items li img{
+	.items li .lazy{
 		float:none;
-		display:inline;
-		position:static;
+		display:inline-block;
+		position:absolute;
+		top:0;
+		left:0;
+		height:@thumbnailWidth;
+		width:@thumbnailWidth;
 		max-height:none;
 		max-width:none;
-		margin:10px auto 0 auto;
+		margin:0 auto;
+	}
+
+	.items li .ui-li-heading{
+		position:absolute;
+		bottom:0;
+		left:0;
+		margin:0 auto;
+		width:@thumbnailWidth;
+		padding:5px;
 	}
 
 	.items li span{
@@ -196,3 +235,25 @@ body{
 		margin:0;
 		top:50px;
 	}
+
+.badges{
+	position:absolute;
+	width:20px;
+	height:100px;
+	top:5px;
+	right:5px;
+	display:block;
+}
+.badge-icon{
+	display:block;
+	background-image: url('../res/badges-sprite.png');
+	background-repeat: no-repeat;
+	height: 25px;
+	width: 20px;
+}
+.badge-sales{
+	 background-position:-4px -46px;
+}
+.badge-gift{
+	background-position:-2px -19px;
+}

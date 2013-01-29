@@ -37,6 +37,8 @@ var t = (function(t){
 	,	'partials/filters':false
 	,	'partials/footer':false
 	,	'partials/header':false
+	,	'partials/item':false
+	,	'partials/location':false
 	,	'page/filter':false
 	,	'page/item':false
 	,	'page/locate':false

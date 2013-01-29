@@ -15,9 +15,15 @@ var templateHelpers = {
 		return '';
 	}
 ,	image:function(url,width,height){
-		if(!width){width = 100; height = 100;}
-		return '<img class="lazy" data-original="'+url+'" width="'+width+'" height="'+height+'">'
-		+ '<noscript><img src="'+url+'" width="'+width+'" height="'+height+'"></noscript>'
+		var widthTag = width ? ' width="'+width+'"' : '';
+		var heightTag = height ? ' width="'+height+'"' : '';
+		var widthStyle = width ? 'width:'+width+'px;' : '';
+		var heightStyle = height ? 'height:'+height+'px;' : '';
+		var tags = (widthTag || heightTag) ? widthTag+heightTag:'';
+		var style = (widthStyle || heightStyle) ? ' style="'+widthStyle+heightStyle+'"' : ''
+		return '<div class="lazy" src="./res/transparent.gif" data-original="'+url+'"'+style+'>'
+		+ '<noscript><img src="'+url+'"'+tags+'></noscript>'
+		+'</div>'
 	}
 ,	ifCond:function(v1, v2, options) {
 		return (v1 == v2) ? options.fn(this) : options.inverse(this);
@@ -44,6 +50,16 @@ var templateHelpers = {
 			return locale[text];
 		}
 		return text ? text.replace('_',' '): '';
+	}
+,	makeBadges:function(badges){
+		var res = '',badge;
+		if(!badges){return res;}
+		badges = badges.split(',');
+		for(i=0; i< badges.length; i++){
+			badge = templateHelpers.getFilter('badges',badges[i].trim())
+			res+='<div class="badge-icon badge-'+badge+'"></div>'
+		}
+		return res;
 	}
 };
 

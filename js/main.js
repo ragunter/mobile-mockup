@@ -78,6 +78,7 @@ var init = function(){
 		+	t.location.each(data.locations)
 		+	t.filter.each($.extend({},data.filters))
 		).appendTo($body)
+	,	lazyImages = $("div.lazy")
 	,	closeMenus = function($not){
 			var $els = ($not && $not.length) ? $('.togglee').not($not.toggle()) : $('.togglee');
 			$els.hide();
@@ -167,15 +168,15 @@ var init = function(){
 	var scrollInterval = setInterval(checkScroll,500);
 
 	// END EVENTS
-
+	less.watch();
 	$.mobile.initializePage()
-	$("img.lazy").show().lazyload({
-		effect:'fadeIn'
-	});
 	$('.iscrollPane').iscrollview({preventTouchHover:false}).each(function(){
 		var $el = $(this);
 		$el.bind('iscroll_onscrollmove',onScroll($el))
 	})
+	lazyImages.show().lazyload({
+		effect:'fadeIn'
+	});
 	setCurrentPage();
 
 	$('body').removeClass('loading');

@@ -1,6 +1,6 @@
-<li data-icon="false">
+<li data-icon="false" class="item-thumbnail">
 	<a href="#item{{@index}}">
-		{{{image image_url 100 100}}}
+		{{{image image_url 0 160}}}
 		<h3>{{name}}</h3>
 		<p class="hiddenTags">
 			{{outputFilters this}}
@@ -8,5 +8,8 @@
 			{{tags}}
 			{{season}}
 		</p>
+		<div class="badges">
+			{{{makeBadges badges}}}
+		</div>
 	</a>
 </li>
