@@ -1,10 +1,10 @@
 <div id="Menu{{title}}" class="menuBar">
-	<div id="MainSelector" class="filterIcon toggle">
-		<input type="button" id="Criterias" value="{{locale 'add_criteria'}}" data-inline="true" class="menu toggler" data-icon="search">
+	<div id="MainSelector" class="filterIcon main toggle">
+		<input type="button" id="Criterias" value="{{locale 'add_criteria'}}" data-inline="true" data-icon="search" class="toggler">
 		<ul data-role="listview" class="togglee" style="display:none" data-theme="b">
 		{{#each filters}}
 			<li>
-				<a href="#Filter{{@key}}" data-rel="dialog">
+				<a href="#" class="add-filter" data-filter="{{key}}">
 					<div class="filter-main-icon filter-icon-{{key}}"></div>
 					<h3 class="filter-value">{{name}}</h3>
 				</a>
@@ -13,4 +13,27 @@
 		</ul>
 	</div>
 	<div class="criteria-helper">&larr; {{locale 'search_help'}}</div>
+	{{#each filters}}
+		<div class="filterIcon toggle" id="FilterIcon{{key}}">
+			<a href="#" class="toggler" data-role="button">
+				<span class="filter-icon filter-icon-{{key}}">{{key}}:</span>
+				<span class="filter-value">{{name}}</span>
+			</a>
+			<ul id="sub_{{name}}" data-role="listview" class="togglee" data-theme="b">
+			{{#if values}}
+			
+				{{#each values}}
+					<li>
+						<a href="#" class="filter-select" data-select="{{../key}}:{{this}}:{{@key}}">
+							{{@key}}
+						</a>
+					</li>
+				{{/each}}
+			{{else}}
+				<li class="togglee" style="height:100px;">{{{contents}}}</li>
+			{{/if}}
+				<li id="DeleteFilter{{key}}" data-icon="delete" data-mini="true" data-theme="e" data-select="{{key}}" class="filter-delete"><a href="#">{{locale 'remove_criteria'}}</a></li>
+			</ul>
+		</div>
+	{{/each}}
 </div>

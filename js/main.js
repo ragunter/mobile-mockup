@@ -84,7 +84,7 @@ var init = function(){
 		+	t.user($.extend(pages.user,data))
 		+	t.item.each(data.items)
 		+	t.location.each(data.locations)
-		+	t.filter.each($.extend({},data.filters))
+		//+	t.filter.each($.extend({},data.filters))
 		).appendTo($body)
 	,	lazyImages = $("div.lazy")
 	,	closeMenus = function($not){
@@ -104,7 +104,10 @@ var init = function(){
    			evt.stopPropagation();
    			evt.preventDefault();
 		})
-
+		.on('click','.togglee',function(evt){
+		   	evt.stopPropagation();
+   			evt.preventDefault();	
+		})
 	
 	// when a filter selection is clicked
 	$('.filter-select').on('click',function(){
@@ -113,12 +116,23 @@ var init = function(){
 		filterManager.add($o.data('select'),currentPage);
 		closeMenus();
 	});
+
+	$('.add-filter').on('click',function(e){
+		var f = filterManager.add($(this).data('filter'),currentPage);
+		closeMenus(f.find('.togglee'));
+		e.preventDefault();
+		return false;
+	})
 	// full text search
 	$('.fulltextbutton').on('click',function(){
-		var $o = $(this);
+		//var $o = $(this);
 		var newVal = $('#FullTextInput').val();
-		$o.closest('.ui-dialog').dialog('close');
-		filterManager.addFilterWidget(currentPage,'text',newVal,newVal);
+		if(!newVal){
+			filterManager.removeFilterWidget(currentPage,'text',newVal,newVal);
+		}
+		else{
+			filterManager.addFilterWidget(currentPage,'text');
+		}
 		filterManager.changeInput(currentPage,oldVal,newVal);
 		oldVal = newVal;
 		closeMenus();

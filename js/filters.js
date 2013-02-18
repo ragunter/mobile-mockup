@@ -13,41 +13,40 @@ var makeFilterManager = function(pages){
 			,	name = o.shift()
 			;
 			query = filter+':'+value;
-			filterManager.addFilterWidget(page,filter,name,value)
-			filterManager.changeInput(page,filter,query,true);
+			var r = filterManager.addFilterWidget(page,filter,name,value)
+			if(value){
+				filterManager.changeInput(page,filter,query,true);
+			}
+			return r;
 		}
 	,	addFilterWidget:function(page,filter,name,value){
+			filter = "#FilterIcon"+filter;
 			var repo = filterManager.filters[page]
 			,	$container = $('.menuBar',page)
 			;
 			if(!(filter in repo)){
 				$('.criteria-helper').hide();
-				repo[filter] = $(t.filtericon({filter:filter,value:value,name:name}))
-										.css('display','none')
-										.appendTo($container)
-										.trigger('create')
-										.show('slow')
-										;
-				repo[filter].find('ul').hide();
+				repo[filter] = $(filter).fadeIn('fast');
+				repo[filter].find('ul').fadeOut();
 			}else{
 				repo[filter].find('#Filter'+filter+'_value').html(name);
 				repo[filter].find('a.toggler .ui-btn-text .filter-value').html(name);
 			}
+			return repo[filter];
 		}
 	,	removeFilterWidget:function(page,filter){
+			filter = "#FilterIcon"+filter;
 			var repo = filterManager.filters[page]
 			,	last = true;
 			;
 			if(filter in repo){
-				repo[filter].hide('fast',function(){
-					$(this).remove();
-				});
+				repo[filter].fadeOut('fast');
 				delete repo[filter];
 			}
 			for(var n in repo){
 				last = false;break;
 			}
-			if(last){$('.criteria-helper').show();}
+			if(last){$('.criteria-helper').fadeIn();}
 		}
 	,	remove:function(query,page){
 			var o = query.split(':')
@@ -58,8 +57,9 @@ var makeFilterManager = function(pages){
 			filterManager.changeInput(page,filter,'',true)
 		}
 	,	changeInput:function(page,oldVal,newVal,isFilter){
+			if(!newVal){newVal = '';}
 			var regex = isFilter ?  new RegExp('\\b'+oldVal+':.*\\b','ig') : new RegExp(''+oldVal+'','ig')
-			,	$input = $(page+' input.ui-input-text')
+			,	$input = $(page+' input.ui-input-text').not('#FullTextInput')
 			;
 			newVal = newVal ? ' '+ newVal : '';
 			var text = ($input.val().replace(regex,'')+newVal).replace(/\s+/g, ' ').trim();
@@ -74,7 +74,7 @@ var filters = {
 		name:'text'
 	,	key:'text'
 	,	image_url:'./res/icons/gender.png'
-	,	contents:'<input type="text" id="FullTextInput"><button class="fulltextbutton">ok</button>'
+	,	contents:'<input type="text" id="FullTextInput"><button class="fulltextbutton" data-theme="a">ok</button>'
 	}
 ,	gender:{
 		name:'gender'
