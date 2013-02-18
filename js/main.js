@@ -106,12 +106,14 @@ var init = function(){
 		})
 
 	
+	// when a filter selection is clicked
 	$('.filter-select').on('click',function(){
 		var $o = $(this);
 		$o.closest('.ui-dialog').dialog('close');
 		filterManager.add($o.data('select'),currentPage);
 		closeMenus();
 	});
+	// full text search
 	$('.fulltextbutton').on('click',function(){
 		var $o = $(this);
 		var newVal = $('#FullTextInput').val();
@@ -121,6 +123,7 @@ var init = function(){
 		oldVal = newVal;
 		closeMenus();
 	})
+	//when a filter delete is clicked
 	$('.menuBar').on('click','.filter-delete',function(){
 		var $o = $(this);
 		if($o[0].id== 'DeleteFiltertext'){
