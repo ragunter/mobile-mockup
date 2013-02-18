@@ -1,0 +1,42 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Raghunter</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<style>
+	body{
+		zoom: 0.75;
+		-webkit-transform: scale(0.75);
+		-moz-transform: scale(0.75);
+		-o-transform: scale(0.75);
+		-webkit-transform-origin: 0 0;
+		-o-transform-origin: 0 0;
+		-moz-transform-origin: 0 0;
+	}
+	.mockup{
+		background-repeat:no-repeat;
+		position:relative;
+	}
+	.mockup iframe{
+		border:none;
+		position:absolute;
+		overflow:hidden;
+	}
+	#Iphone4s{
+		background-image:url('../res/iphone4s-sized.png');
+		width:770px;
+		height:1503px;
+	}
+	#Iphone4s iframe{
+		width:648px;
+		height:960px;
+		top:309px;
+		left:66px;
+	}
+	</style>
+</head>
+<body>
+	<div id="Iphone4s" class="mockup">
+		<iframe src="../index.html" scrollbar='no' marginwidth='0' marginheight='0' hspace='0' frameborder='0'></iframe>
+	</div>
+</body>
